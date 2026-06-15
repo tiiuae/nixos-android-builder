@@ -1,0 +1,101 @@
+# Components {#sec-components}
+
+## Custom FHS Environment {#sec-fhsenv}
+
+A derivation bundles all declared packages into `/bin` + `/lib`, bind-mounted at runtime. A custom `glibc` configures the dynamic linker for `/lib`; a `bash` with `forFHSEnv` puts `/bin` in `$PATH`.
+
+`pkgs.buildFHSEnv`, `nix-ld`, and `envfs` were tried but don't survive sandboxed bind-mounts without `/nix/store`.
+
+## Android Build Environment {#sec-android-build-env}
+
+The `android-build-env.nix` module adds AOSP build dependencies to the FHS environment, plus reference wrapper scripts for the default workflow:
+
+- `fetch-android` — clone the configured repo branch
+- `build-android` — set lunch target and build
+- `android-sbom` — generate SBOM via upstream facilities
+- `android-measure-source` — hash all files for source measurement
+
+## YubiKey Authentication {#sec-yubikey-auth}
+
+The `yubikey-auth.nix` module enforces hardware-token authentication via `pam_u2f`. Two key groups can be configured for dual-approval (two people must each touch their YubiKey). Password auth is disabled entirely.
+
+## Unattended Mode {#sec-unattended}
+
+When `nixosAndroidBuilder.unattended.enable` is set, a systemd service runs a configurable step sequence on `tty2` after boot. Steps prefixed with `root:` run with superuser privileges. Default steps:
+
+1. `root:start-shell-if-yubikey-found` — poll for YubiKey, allow operator interrupt
+2. `select-branch` — choose AOSP branch (if multiple configured)
+3. `fetch-android` — clone sources
+4. `build-android` — build the lunch target
+5. `android-sbom` — generate SBOM
+6. `android-measure-source` — hash source files
+7. `copy-android-outputs` — persist build artifacts
+8. `root:lock-var-lib-build` — unmount build partition, destroy encryption key
+9. `root:disable-usb-guard` — stop USBGuard, re-authorize USB devices
+10. `root:start-shell-and-shutdown` — interactive shell, then poweroff
+
+USBGuard blocks USB mass storage during builds to prevent data exfiltration.
+
+## Remote Attestation (Keylime) {#sec-keylime}
+
+The Keylime agent is enabled by default on every builder image. It uses the **push model** — the agent periodically sends evidence to the verifier. Identity is derived from the TPM Endorsement Key; no pre-provisioned credentials are needed.
+
+The agent's Attestation Key is stored on the persistent `/var/lib/keylime` partition so re-registrations after reboot use the same key.
+
+### Auto-Enrollment {#sec-auto-enrollment}
+
+The auto-enrollment daemon automates the agent → verifier enrollment:
+
+```{mermaid}
+%%| label: fig-auto-enrollment
+%%| fig-width: 4.5
+%%| fig-cap: "Auto-enrollment component diagram"
+---
+config:
+  theme: neutral
+---
+graph TB
+    subgraph server["Attestation Server"]
+        registrar["Registrar :8891"]
+        verifier["Verifier :8881"]
+        daemon["Auto-Enroll :8893"]
+        daemon -- polls --> registrar
+        daemon -- enrolls --> verifier
+    end
+
+    subgraph agent["Agent"]
+        ka["keylime-agent"]
+        rmbs["report-measured-\nboot-state"]
+    end
+
+    ka -- register --> registrar
+    rmbs -- POST refstate --> daemon
+    verifier -- attest --> ka
+```
+
+The measured boot reference state is accepted on a **trust-on-first-use** basis — the agent self-reports before first attestation. After enrollment, the verifier replays every event log and validates every TPM quote, so false reports are caught immediately.
+
+### Attestation Policy
+
+The custom `uki` policy (in `packages/keylime-measured-boot-policy/`) pins security-critical PCRs (0, 4, 7 — firmware, UKI digest, Secure Boot keys) while accepting expected variability in others. See @sec-pcr-policy for the full validation table.
+
+### Tools
+
+- `attestation-ctl` — query enrollment status, remove agents from verifier/registrar
+- `measure-boot-state` — parse UEFI event log → reference state JSON
+- `report-measured-boot-state` — generate and POST reference state to auto-enrollment
+- `debug-measured-boot-state` — diagnose failures: replay event log, compare PCRs, diff refstates
+
+## Credential Storage {#sec-credential-storage}
+
+TPM-backed persistent storage via `systemd-creds`, bound to PCR 7. Credentials are stored on the `/var/lib/credentials` LUKS partition and bind-mounted to `/run/credstore.encrypted/` for automatic consumption by systemd services with `LoadCredentialEncrypted=`.
+
+See @sec-running-builds for usage of the `credential-store` command.
+
+## Fatal Error Handling
+
+The `fatal-error.nix` module overrides systemd's emergency target with a `dialog`-based message box on `tty2`. Services write to `/run/fatal-error` on failure.
+
+## Debug Mode
+
+`nixosAndroidBuilder.debug` adds: unauthenticated emergency shell, extra packages (vim, htop, tmux, git), nix with flakes, empty passwords, passwordless sudo, verbose logging, debug shell on tty3. **Not for production.**

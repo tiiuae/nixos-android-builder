@@ -1,12 +1,12 @@
----
-title: Attestation-Gated Git Server
----
+# Attestation-Gated Git Server {#sec-attestation-git-server}
 
-> **Demo feature.** This git server is designed for demonstration purposes:
-> it shows that only TPM-attested builder machines can clone sensitive
-> repositories. It uses git dumb HTTP (static file serving) which is
-> adequate for small, infrequently-updated repos but not suitable for
-> large-scale production use.
+::: {.callout-note}
+**Demo feature.** This git server is designed for demonstration purposes:
+it shows that only TPM-attested builder machines can clone sensitive
+repositories. It uses git dumb HTTP (static file serving) which is
+adequate for small, infrequently-updated repos but not suitable for
+large-scale production use.
+:::
 
 The git server lets attested builder machines clone repositories over
 HTTPS/mTLS. A machine that fails attestation, or has never been attested,
@@ -14,7 +14,10 @@ cannot clone.
 
 ## How It Works
 
-```mermaid
+```{mermaid}
+%%| label: fig-git-auth-flow
+%%| fig-width: 6
+%%| fig-cap: "Git clone authentication flow"
 sequenceDiagram
     participant A as Agent
     participant N as nginx :443
@@ -106,8 +109,9 @@ The credentials are provisioned automatically:
 - **CA cert** is written to `/run/keylime-git/ca-cert.pem` by
   `report-measured-boot-state` from `/boot/attestation-server.json`.
 
-Both paths are world-readable, so any local user can run
-`keylime-git-clone` without elevated privileges.
+Both paths are readable by the `user` account so `keylime-git-clone`
+works without elevated privileges. The key is scoped to this machine's
+TPM identity and is only useful when paired with a passing attestation.
 
 Custom cert paths can be passed if needed:
 

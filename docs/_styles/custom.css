@@ -1,0 +1,27 @@
+/*-- scss:rules --*/
+
+/* Options reference: space between definition list items */
+dl dt {
+  margin-top: 1.5em;
+  padding-top: 0.75em;
+  border-top: 1px solid #eee;
+}
+
+dl dt:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+dl dd {
+  margin-bottom: 0.5em;
+}
+
+dl dd > p {
+  margin-bottom: 0.3em;
+}
+
+/* Code in definition terms */
+dl dt code {
+  font-size: 0.95em;
+}

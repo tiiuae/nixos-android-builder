@@ -1,0 +1,54 @@
+# Design Principles {#sec-design}
+
+A reference implementation and proof-of-concept for offline, SLSA‑compliant AOSP builds. The system is modular — individual components (attestation, FHS environment, credential storage) can be adapted or replaced for specific distribution needs.
+
+Core properties:
+
+* **Portable** — Runs on arbitrary `x86_64` hardware with UEFI, ≥250 GB disk, ≥64 GB memory.
+* **Offline** — Requires no network beyond internal source and artifact repositories.
+* **Ephemeral** — Each boot produces a pristine environment; no trace remains after shutdown.
+* **Declarative** — All aspects are described in Nix expressions, ensuring identical behavior regardless of build environment or time.
+* **Trusted** — Disk images are cryptographically signed. TPM-based attestation verifies the running system.
+
+## Limitations
+
+* **aarch64 support** — only `x86_64` with UEFI is implemented.
+* **Artifact uploads** — build artifacts can be persisted to a second disk but are not automatically uploaded to remote storage.
+* **Configuration** — adapting to custom AOSP distributions requires familiarity with NixOS modules. See @sec-options-reference.
+
+## Technologies
+
+* **NixOS / nixpkgs** — declarative system configuration, reproducible builds
+* **systemd** — service orchestration, `systemd-repart` for disk images, `systemd-creds` for TPM-encrypted credentials
+* **LUKS + dm-verity** — disk encryption (ephemeral + TPM2-bound) and read-only store integrity
+* **erofs** — compressed read-only filesystem for the immutable store partition
+* **Keylime** — TPM-based remote attestation (Rust agent, Python registrar/verifier)
+* **YubiKey / PAM** — hardware-token authentication via `pam_u2f`
+* **USBGuard** — USB device blocking during unattended builds
+* **QEMU** — VM-based testing
+
+An SBOM for the builder closure can be generated:
+
+```bash
+nix run github:tiiuae/sbomnix#sbomnix -- .#nixosConfigurations.nixos.toplevel
+```
+
+## Deployment Topology
+
+```{mermaid}
+%%| label: fig-deployment-topology
+%%| fig-width: 6
+%%| fig-cap: "Deployment topology"
+graph LR
+    local["Local Machine<br/><i>nix build, sign</i>"]
+    server["Attestation Server<br/><i>registrar, verifier,<br/>auto-enroll, git (opt)</i>"]
+    builder["Builder Machine<br/><i>keylime-agent, TPM 2.0</i>"]
+
+    local -- "flash via USB" --> builder
+    builder -- "register (EK)" --> server
+    server <-- "TPM quotes" --> builder
+```
+
+- The **local machine** builds and signs disk images (requires only Nix).
+- The **attestation server** runs keylime services, optionally via system-manager on non-NixOS. See @sec-attestation-server.
+- The **builder machine** boots the signed image, registers with the server, and runs AOSP builds.

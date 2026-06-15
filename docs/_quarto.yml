@@ -1,0 +1,70 @@
+project:
+  type: book
+  output-dir: _output
+
+book:
+  title: "NixOS Android Builder"
+  subtitle: "Ephemeral, Attested AOSP Build System"
+  author: "TII"
+  date: last-modified
+  chapters:
+    - index.qmd
+    - part: "User Guide"
+      chapters:
+        - chapters/getting-started.md
+        - chapters/building-images.md
+        - chapters/disk-installer.md
+        - chapters/running-builds.md
+        - chapters/desktop.md
+        - chapters/vm-testing.md
+    - part: "Attestation"
+      chapters:
+        - chapters/attestation-server.md
+        - chapters/attestation-protocol.qmd
+        - chapters/attestation-git-server.qmd
+    - part: "Architecture"
+      chapters:
+        - chapters/design.qmd
+        - chapters/build-process.qmd
+        - chapters/boot-sequence.qmd
+        - chapters/components.qmd
+    - part: "Reference"
+      chapters:
+        - chapters/options-reference.md
+        - chapters/troubleshooting.md
+        - chapters/glossary.md
+    - part: "Appendices"
+      chapters:
+        - chapters/demo-runbook.md
+        - chapters/contributing.md
+
+format:
+  html:
+    theme:
+      - cosmo
+      - _styles/custom.css
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-copy: true
+    code-overflow: wrap
+    mermaid:
+      theme: neutral
+  typst:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    papersize: a4
+    margin:
+      x: 2.5cm
+      y: 2.5cm
+    fontsize: 10pt
+    include-in-header: _typst/header.typ
+    mermaid:
+      theme: neutral
+
+filters:
+  - _filters/nixos-options.lua
+
+metadata:
+  options_json: "NIXOS_OPTIONS_JSON"

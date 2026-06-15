@@ -1,0 +1,79 @@
+# Build Process {#sec-build-process}
+
+The disk image is assembled in multiple stages using `systemd-repart` (twice at build time, once at runtime).
+
+```{mermaid}
+%%| label: fig-build-process
+%%| fig-width: 6
+%%| fig-cap: "Build-time image assembly"
+---
+config:
+  theme: neutral
+---
+flowchart TB
+    subgraph nixbuild["inside nix sandbox"]
+      direction TB
+
+      fhsenv["(1) FHS environment"]
+      glibc["(a) glibc-vanilla"] --> fhsenv
+      bash["(b) bash (forFHSEnv)"] --> fhsenv
+      tools["(c) android build requirements"] --> fhsenv
+      fhsenv --> nixos["(2) NixOS Closure" ]
+      minimal-nixos["(d) Minimal NixOS"] --> nixos
+      nixos -- store paths --> intermediate["(3) Intermediate Image" ]
+      intermediate -- store partition --> final["(5) Final Image"]
+      intermediate -- store-verity hashes --> final
+      intermediate -- root hash --> uki["(4) UKI"]
+      nixos -- kernel & initrd --> uki
+      uki -- ESP partition  --> final
+    end
+
+    final -- copy image --> signing-script
+    subgraph signing-script["configure-disk-image sign"]
+      direction TB
+
+      sign-uki["(6) Sign UKI EFI application"]
+      copy-auth["(7) Copy Secure Boot update bundles"]
+    end
+
+    signing-script --> signed
+    signed["(8) Image is signed & ready to boot"]
+```
+
+## Steps
+
+1. **FHS environment** (@sec-fhsenv): A derivation assembles all libraries and binaries into an FHS layout — `glibc-vanilla` (dynamic linker configured for `/lib`), `bash` (with FHS `$PATH`), and Android build dependencies.
+
+2. **NixOS closure** (`system.build.toplevel`): The full system including boot services, the FHS derivation, and all modules.
+
+3. **Intermediate image** (`system.build.intermediateImage`): First `systemd-repart` run. The `store` partition is populated with the NixOS closure. `boot` and `store-verity` remain empty.
+
+4. **UKI**: dm-verity hashes are calculated from the filled store partition. A Unified Kernel Image is built with kernel, initrd, and `usrhash` on the kernel command line.
+
+5. **Final image** (`system.build.finalImage`): Second `systemd-repart` run. The store partition is copied, verity hashes are written, and the UKI is placed on the ESP.
+
+6. **Sign UKI**: Outside the Nix sandbox, the UKI is extracted, signed with Secure Boot keys, and written back.
+
+7. **Secure Boot bundles**: `*.auth` files are copied to the ESP for automatic enrollment.
+
+8. The signed image is ready to flash.
+
+## Disk Layout
+
+Build-time (immutable):
+
+| Partition | Label | Format | Mountpoint |
+|-----------|-------|--------|------------|
+| 00‑esp | `boot` | vfat | `/boot` |
+| 10‑store‑verity | `store-verity` | dm-verity hash | n/a |
+| 20‑store | `store` | erofs | `/usr` |
+
+Runtime (created by `systemd-repart` on first boot):
+
+| Partition | Label | Format | Mountpoint | Lifecycle |
+|-----------|-------|--------|------------|-----------|
+| 31‑credentials | `var-lib-credentials` | LUKS+ext4 (TPM2) | `/var/lib/credentials` | Persistent |
+| 32‑keylime | `var-lib-keylime` | LUKS+ext4 (TPM2) | `/var/lib/keylime` | Persistent |
+| 40‑build | `var-lib-build` | LUKS+ext4 (random key) | `/var/lib/build` | Ephemeral |
+
+The root filesystem (`/`) is `tmpfs` (RAM only). There is no boot loader — the UKI is loaded directly by the firmware as an EFI application.

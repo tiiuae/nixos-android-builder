@@ -1,0 +1,70 @@
+# Boot Sequence {#sec-boot-sequence}
+
+```{mermaid}
+%%| label: fig-boot-sequence
+%%| fig-width: 6
+%%| fig-cap: "Runtime boot sequence"
+---
+config:
+  theme: neutral
+---
+flowchart TB
+    uefi["UEFI Firmware"]
+    kernel["Kernel"]
+    systemd-initrd["systemd"]
+
+    check-secureboot["(2) Check Secure Boot status"]
+    enroll-secureboot["Enroll Secure Boot keys"]
+    reboot["Reboot"]
+    halt["Display error & halt"]
+
+    generate-disk-key["(3) Generate ephemeral encryption key"]
+    systemd-repart["(4) Create/reset partitions"]
+    mount["(5) Mount partitions"]
+    build-android["(7) fetch-android & build-android"]
+    android-tools["Android Build Tools"]
+    artifacts["(8) Build outputs"]
+
+    uefi -- "(1) Verify & Boot" --> uki
+    subgraph uki["Unified Kernel Image"]
+      direction TB
+      kernel --> initrd
+      subgraph initrd["Initial RAM Disk"]
+        direction TB
+        systemd-initrd --> check-secureboot
+        check-secureboot -- setup --> enroll-secureboot
+        check-secureboot -- disabled --> halt
+        check-secureboot -- active --> generate-disk-key
+        generate-disk-key --> systemd-repart
+        systemd-repart --> mount
+        enroll-secureboot --> reboot
+      end
+    end
+    uki -- "(6) Switch into NixOS" --> nixos
+    subgraph nixos["Booted NixOS"]
+      direction TB
+      build-android --> android-tools
+      android-tools --> artifacts
+    end
+```
+
+## Steps
+
+1. **UEFI boot**: Firmware loads the UKI, verifying its signature if Secure Boot is active.
+
+2. **Secure Boot check** (`ensure-secure-boot-enrollment.service`):
+   - **Active** → continue
+   - **Setup Mode** → enroll certificates from ESP → reboot
+   - **Disabled** → halt with error
+
+3. **Ephemeral key** (`generate-disk-key.service`): 64 bytes from `/dev/urandom`, never stored on disk.
+
+4. **Partition setup** (`systemd-repart`): On first boot, creates all mutable partitions. On subsequent boots, leaves persistent partitions untouched, factory-resets the ephemeral build partition with a fresh key.
+
+5. **Mount**: Read-only `/usr` (dm-verity checked), bind-mounts for `/bin` and `/lib` (FHS), `tmpfs` at `/`, encrypted partitions for build data, credentials, and keylime state.
+
+6. **Switch to NixOS**: Stage 2 boot completes.
+
+7. **Build**: In unattended mode (@sec-unattended), a configurable step sequence runs automatically. In interactive mode, `fetch-android`, `build-android`, and related tools are available at the shell (see @sec-running-builds).
+
+8. **Outputs** are in `/var/lib/build/source/out`. They are lost on shutdown unless artifact storage is enabled.

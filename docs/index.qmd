@@ -1,0 +1,19 @@
+# Preface {.unnumbered}
+
+The NixOS Android Builder produces signed, ephemeral disk images for building AOSP. Each boot starts clean: the build partition is encrypted with a fresh random key and wiped on shutdown. A Keylime attestation server continuously verifies that builder machines are running unmodified software.
+
+## Quick Start {.unnumbered}
+
+```bash
+nix run .#create-signing-keys          # generate Secure Boot keys
+nix build .#image                       # build the disk image
+install -m 600 result/*.raw .           # copy out of the nix store
+nix run .#configure-disk-image -- sign --keystore ./keys --device *.raw
+sudo dd bs=1M status=progress if=*.raw of=/dev/sdX && sudo sync
+```
+
+Or try it in a VM:
+
+```bash
+nix run .#run-vm
+```

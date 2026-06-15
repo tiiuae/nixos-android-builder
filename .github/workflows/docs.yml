@@ -1,0 +1,65 @@
+name: Documentation
+
+on:
+  push:
+    branches: [main]
+    paths: ['docs/**', 'modules/**', 'packages/docs/**', 'flake.nix', 'flake.lock']
+  pull_request:
+    paths: ['docs/**', 'modules/**', 'packages/docs/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-html:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: NixOS/nix-installer-action@main
+      - uses: Mic92/hestia/action@main
+
+      - name: Build HTML docs
+        run: nix build .#book-html -o result-html
+
+      - name: Upload HTML artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: result-html
+
+  build-pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: NixOS/nix-installer-action@main
+      - uses: Mic92/hestia/action@main
+
+      - name: Build PDF docs
+        run: nix run .#build-book -- pdf
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NixOS-Android-Builder-Manual
+          path: docs/_output/*.pdf
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: build-html
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

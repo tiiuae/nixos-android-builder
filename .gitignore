@@ -5,6 +5,8 @@ android-builder-efi-vars.fd
 result
 keys
 docs/mermaid-filter.err
+docs/_output/
+docs/.quarto/
 __pycache__/
 .ruff_cache/
 
@@ -12,3 +14,5 @@ __pycache__/
 *-swtpm/
 *-efi-vars.fd
 vm-state/
+attestation-server.json
+result-*
