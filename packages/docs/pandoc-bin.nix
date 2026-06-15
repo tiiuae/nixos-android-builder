@@ -8,8 +8,10 @@
   gmp,
   zlib,
 }:
-let version = "3.8.3";
-in stdenv.mkDerivation {
+let
+  version = "3.8.3";
+in
+stdenv.mkDerivation {
   pname = "pandoc-bin";
   inherit version;
 
@@ -19,7 +21,11 @@ in stdenv.mkDerivation {
   };
 
   nativeBuildInputs = [ autoPatchelfHook ];
-  buildInputs = [ gmp zlib stdenv.cc.cc.lib ];
+  buildInputs = [
+    gmp
+    zlib
+    stdenv.cc.cc.lib
+  ];
 
   installPhase = ''
     mkdir -p $out/bin

@@ -48,18 +48,23 @@ let
 
     src = lib.fileset.toSource {
       root = ../..;
-      fileset = lib.fileset.fileFilter
-        (f: lib.hasSuffix ".md" f.name
-          || lib.hasSuffix ".qmd" f.name
-          || lib.hasSuffix ".yml" f.name
-          || lib.hasSuffix ".lua" f.name
-          || lib.hasSuffix ".css" f.name
-          || lib.hasSuffix ".typ" f.name
-  )
-        ../../docs;
+      fileset = lib.fileset.fileFilter (
+        f:
+        lib.hasSuffix ".md" f.name
+        || lib.hasSuffix ".qmd" f.name
+        || lib.hasSuffix ".yml" f.name
+        || lib.hasSuffix ".lua" f.name
+        || lib.hasSuffix ".css" f.name
+        || lib.hasSuffix ".typ" f.name
+      ) ../../docs;
     };
 
-    nativeBuildInputs = [ quarto chromium which lychee ];
+    nativeBuildInputs = [
+      quarto
+      chromium
+      which
+      lychee
+    ];
 
     QUARTO_PANDOC = "${pandoc-bin}/bin/pandoc";
     QUARTO_CHROMIUM = "${chromium}/bin/chromium";
@@ -146,7 +151,10 @@ let
   # Deploy docs to gh-pages branch
   deploy-docs = writeShellApplication {
     name = "deploy-docs";
-    runtimeInputs = [ quarto git ];
+    runtimeInputs = [
+      quarto
+      git
+    ];
     text = ''
       export QUARTO_PANDOC="${pandoc-bin}/bin/pandoc"
       export QUARTO_CHROMIUM="${chromium}/bin/chromium"
@@ -189,5 +197,10 @@ let
   };
 in
 {
-  inherit book-html build-book preview-book deploy-docs;
+  inherit
+    book-html
+    build-book
+    preview-book
+    deploy-docs
+    ;
 }
