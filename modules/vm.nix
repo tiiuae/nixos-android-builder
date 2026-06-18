@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+# SPDX-License-Identifier: Apache-2.0
+
 # Settings which should only be applied if run as a VM, not on bare metal.
 {
   lib,

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+# SPDX-License-Identifier: Apache-2.0
+
 """Keylime measured boot policy for UKI (Unified Kernel Image) boot.
 
 Registers a ``uki`` policy that validates SCRTM, firmware blobs,

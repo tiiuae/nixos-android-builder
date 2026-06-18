@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+# SPDX-License-Identifier: Apache-2.0
+
 # Keylime server (registrar + verifier) module for system-manager.
 #
 # Shares options, defaults, and config generation with modules/keylime.nix

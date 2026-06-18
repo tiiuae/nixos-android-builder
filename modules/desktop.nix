@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+# SPDX-License-Identifier: Apache-2.0
+
 # Login greeter via greetd + tuigreet.
 #
 # Provides a minimal shell session with U2F authentication (when keys are

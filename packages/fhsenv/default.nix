@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+# SPDX-License-Identifier: Apache-2.0
+
 # Create an environment similar to `pkgs.buildFHSEnv`, but with a twist:
 # No symlinks to the nix store are included, `/bin` and `/lib` include regular
 # files. Executables are patched to look for their dynamic linker and libraries

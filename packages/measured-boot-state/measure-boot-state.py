@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+# SPDX-License-Identifier: Apache-2.0
+
 """Generate a measured boot reference state from an event log.
 
 Thin CLI wrapper around the ``measured_boot_state`` library.

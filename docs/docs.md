@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
 ---
 title: NixOS Android Builder
 ---
@@ -528,5 +533,4 @@ flowchart TB
 **TPM** – Trusted Platform Module. A dedicated security chip that provides hardware-based cryptographic functions and key storage.
 
 **UKI** – Unified Kernel Image. A single EFI executable containing the Linux kernel, initrd, and boot parameters, simplifying Secure Boot signing.
-
 

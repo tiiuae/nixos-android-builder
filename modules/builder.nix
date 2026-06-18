@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+# SPDX-License-Identifier: Apache-2.0
+
 # Android-builder-specific base configuration.
 #
 # Options and defaults that only apply to the ephemeral android build

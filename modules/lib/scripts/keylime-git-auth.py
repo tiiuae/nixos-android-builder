@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+# SPDX-License-Identifier: Apache-2.0
+
 """Auth subrequest backend for the attestation-gated git server.
 
 nginx calls GET /verify?uuid=<agent-uuid> via auth_request.

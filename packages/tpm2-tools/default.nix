@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+# SPDX-License-Identifier: Apache-2.0
+
 # tpm2-tools from upstream master, for the PCR 11 EV_IPL fix
 # (commit b25c9220: "tpm2_eventlog: Extend pcrs using event EV_IPL")
 # which silences spurious warnings about UKI measurements in PCR 11.
