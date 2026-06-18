@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+# SPDX-License-Identifier: Apache-2.0
+
 # Shared definitions for the keylime server NixOS module (modules/keylime.nix)
 # and the system-manager port (system-manager/keylime.nix). Contains INI
 # helpers, config defaults, option declarations, and config-file generators.

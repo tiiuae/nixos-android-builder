@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+# SPDX-License-Identifier: Apache-2.0
+
 """Measured boot reference state library.
 
 Parses the binary UEFI event log (via ``tpm2_eventlog``) and

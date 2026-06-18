@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+# SPDX-License-Identifier: Apache-2.0
+
 # Store systemd credentials on a persistent, TPM2-bound LUKS partition
 #
 # This module bind-mounts the credential directory to

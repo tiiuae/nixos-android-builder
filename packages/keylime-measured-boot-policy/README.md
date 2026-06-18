@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
 # UKI Measured Boot Policy for Keylime
 
 Custom keylime measured boot attestation (MBA) policy for Unified Kernel

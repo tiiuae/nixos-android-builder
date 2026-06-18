@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+# SPDX-License-Identifier: Apache-2.0
+
 """Auto-enrollment daemon for Keylime agents.
 
 Runs an HTTPS server that accepts measured boot reports from agents and

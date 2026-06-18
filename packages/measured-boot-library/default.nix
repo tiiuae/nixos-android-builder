@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+# SPDX-License-Identifier: Apache-2.0
+
 # Shared library for parsing UEFI event logs, generating measured
 # boot reference states, PCR replay, and refstate diffing.  Used
 # by measure-boot-state, report-measured-boot-state, and

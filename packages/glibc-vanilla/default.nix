@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+# SPDX-License-Identifier: Apache-2.0
+
 { glibc, linuxHeaders }:
 glibc.overrideAttrs (oldAttrs: {
   configureFlags = (oldAttrs.configureFlags or [ ]) ++ [

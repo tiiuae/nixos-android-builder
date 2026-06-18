@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+# SPDX-License-Identifier: Apache-2.0
+
 # End-to-end VM test for the attestation-gated git server.
 #
 # This uses a real keylime registrar, verifier, and agent with an

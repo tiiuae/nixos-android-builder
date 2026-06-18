@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+# SPDX-License-Identifier: Apache-2.0
+
 # To test yubikey auth in the vm, get your yubikeys product ids and then run:
 # nix run -L .\#run-vm -- -usb -device usb-host,vendorid=0x1050,productid=0x0407 -device usb-host,vendorid=0x1050,productid=0x0116
 {

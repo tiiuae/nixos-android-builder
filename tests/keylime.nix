@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+# SPDX-License-Identifier: Apache-2.0
+
 # Core keylime test: registration, attestation, tampered refstate
 # rejection, and push-mode timeout recovery.
 #

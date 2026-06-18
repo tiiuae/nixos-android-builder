@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 TII (SSRC) and the Ghaf contributors
+# SPDX-License-Identifier: Apache-2.0
+
 """
   Recursively copy and merge /bin and /lib from a list of store paths
   - Warn if files have already been `seen` in another store path, and list the
