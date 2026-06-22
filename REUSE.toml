@@ -1,0 +1,16 @@
+version = 1
+
+[[annotations]]
+path = "flake.lock"
+SPDX-FileCopyrightText = "2026 TII (SSRC) and the Ghaf contributors"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = ["docs/*.pdf", "docs/pygments.theme"]
+SPDX-FileCopyrightText = "2026 TII (SSRC) and the Ghaf contributors"
+SPDX-License-Identifier = "CC-BY-SA-4.0"
+
+[[annotations]]
+path = ["packages/keylime/*.patch", "packages/keylime-agent/*.patch"]
+SPDX-FileCopyrightText = "2026 TII (SSRC) and the Ghaf contributors"
+SPDX-License-Identifier = "Apache-2.0"
