@@ -85,7 +85,7 @@ modules/                      # NixOS modules (core of the project)
 ├── keylime-agent.nix         # Keylime TPM attestation agent
 ├── secure-boot.nix           # Secure Boot / UKI signing
 ├── credential-storage.nix    # TPM-encrypted credential storage
-├── yubikey-auth.nix          # YubiKey / U2F PAM authentication
+├── yubikey-auth.nix          # YubiKey / PIV multi-party PAM authentication
 ├── unattended.nix            # Unattended build pipeline
 └── ...                       # base, debug, fatal-error, etc.
 

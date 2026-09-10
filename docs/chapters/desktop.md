@@ -39,7 +39,7 @@ The offline image is an order of magnitude larger than the regular desktop image
 
 Edit `desktop-configuration.nix`:
 
-- [ ] Set YubiKey public keys in `yubikeys.groupA` (or clear for password auth)
+- [ ] Enroll YubiKeys and set `security.pam.multiparty.entries` (or leave empty for password auth)
 - [ ] Set `nixosAndroidBuilder.debug = false` for production
 
 ## Sign & Flash

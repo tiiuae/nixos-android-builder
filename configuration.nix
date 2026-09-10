@@ -5,6 +5,20 @@
   # Name our system. Image file names and metadata is derived from this.
   system.name = "android-builder";
 
+  # Enroll one PIV card per group, then paste the printed SPKI values here:
+  #   piv-multiparty-enroll -u user -g A
+  #   piv-multiparty-enroll -u user -g B
+  # entries.user = [
+  #   { group = "A"; spki = "MFkw..."; }
+  #   { group = "B"; spki = "MFkw..."; }
+  # ];
+  #
+  # The SPKI can be re-derived at any time from the certificate stored on
+  # the card, no reset needed:
+  #   yubico-piv-tool -a read-certificate -s 9a \
+  #     | openssl x509 -noout -pubkey | openssl pkey -pubin -outform DER | base64 -w0
+  security.pam.multiparty.entries = { };
+
   nixosAndroidBuilder = {
     debug = false;
 
@@ -16,14 +30,6 @@
       ];
     };
     credentialStorage.enable = true;
-
-    # To get a public key, attach your yubikey and run the following command on the host:
-    # pamu2fcfg --pin-verification -i "pam://nixos-android-builder" -o "pam://nixos-android-builder" -u "user"
-    yubikeys.groupA = [
-    ];
-
-    yubikeys.groupB = [
-    ];
 
     unattended.enable = true;
 

@@ -28,7 +28,7 @@ Core properties:
 * **LUKS + dm-verity** — disk encryption (ephemeral + TPM2-bound) and read-only store integrity
 * **erofs** — compressed read-only filesystem for the immutable store partition
 * **Keylime** — TPM-based remote attestation (Rust agent, Python registrar/verifier)
-* **YubiKey / PAM** — hardware-token authentication via `pam_u2f`
+* **YubiKey / PAM** — multi-party hardware-token authentication via `pam-piv-multiparty`
 * **USBGuard** — USB device blocking during unattended builds
 * **QEMU** — VM-based testing
 

@@ -92,8 +92,8 @@ PAM
 :   Pluggable Authentication Modules. The Linux framework for pluggable authentication.
 
 
-pam_u2f
-:   A PAM module for U2F/FIDO2 authentication with hardware tokens such as YubiKeys.
+pam-piv-multiparty
+:   A PAM module enforcing multi-party authentication with PIV smartcards such as YubiKeys. Each configured group must be satisfied by a distinct card (touch + PIN).
 
 
 PCR

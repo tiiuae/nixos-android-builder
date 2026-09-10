@@ -22,13 +22,15 @@ The `android-build-env.nix` module adds AOSP build dependencies to the FHS envir
 
 ## YubiKey Authentication {#sec-yubikey-auth}
 
-The `yubikey-auth.nix` module enforces hardware-token authentication via `pam_u2f`. Two key groups can be configured for dual-approval (two people must each touch their YubiKey). Password auth is disabled entirely.
+The `yubikey-auth.nix` module enforces hardware-token authentication via `pam-piv-multiparty`, which authenticates against the PIV applet of each YubiKey. Two key groups (A and B) are configured by default for dual-approval: two people must each present their YubiKey, touch it, and enter its PIN. Once cards are enrolled, password auth is disabled entirely; with no enrolled cards the system falls back to password auth so it stays accessible.
+
+Cards are enrolled with `piv-multiparty-enroll -u user -g A` (and `-g B`), which provisions the card's slot 9a and prints the SPKI to paste into `security.pam.multiparty.entries`. Enrolment assumes a factory-default PIV applet; the SPKI can later be re-read from the card's certificate without a reset. For test setups with a single YubiKey, override `security.pam.multiparty.groups` with a single group.
 
 ## Unattended Mode {#sec-unattended}
 
 When `nixosAndroidBuilder.unattended.enable` is set, a systemd service runs a configurable step sequence on `tty2` after boot. Steps prefixed with `root:` run with superuser privileges. Default steps:
 
-1. `root:start-shell-if-yubikey-found` — poll for YubiKey, allow operator interrupt
+1. `root:start-shell-if-yubikey-found` — poll for one YubiKey per configured group, allow operator interrupt
 2. `select-branch` — choose AOSP branch (if multiple configured)
 3. `fetch-android` — clone sources
 4. `build-android` — build the lunch target

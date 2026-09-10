@@ -11,11 +11,10 @@
 {
   name = "desktop-integration-test";
 
-  # U2F authentication (YubiKey) is not tested here because pam_u2f
-  # requires a real USB HID device speaking the CTAP protocol — there
-  # is no practical virtual FIDO2 authenticator for NixOS VM tests.
-  # Instead, we test login via password auth (groupA is empty, so
-  # yubikey-auth.nix leaves PAM defaults intact).
+  # Multi-party PIV authentication can't be driven from QEMU (no
+  # virtual PIV smartcard). With `entries = {}` the yubikey-auth.nix
+  # module leaves PAM defaults intact and the system falls back to
+  # standard password authentication.
 
   nodes.machine =
     { ... }:
@@ -24,14 +23,10 @@
       config = {
         _module.args = { inherit customPackages self; };
 
-        # Clear YubiKey groups so yubikey-auth.nix leaves PAM defaults
-        # intact and falls back to password auth. pam_u2f cannot be
-        # tested in QEMU — it requires a real USB HID FIDO2 device.
-        nixosAndroidBuilder.yubikeys.groupA = lib.mkForce [ ];
-        nixosAndroidBuilder.yubikeys.groupB = lib.mkForce [ ];
+        # Empty entries → yubikey-auth.nix leaves the password
+        # fallback in place.
+        security.pam.multiparty.entries = lib.mkForce { };
 
-        # Set a known password for the test user so we can log in
-        # through tuigreet without U2F.
         users.users.user.hashedPassword = "$6$0kZnFhhiulKUACXN$B83f7jPk8ZF2R1.wAMbM/IXuqvV6Ub41K2vrH6evE5EeCK51v9l/gTGATe8dkt2a19DRt9caZwrr7CIsOV1s0."; # "test"
 
         virtualisation = lib.mkVMOverride {

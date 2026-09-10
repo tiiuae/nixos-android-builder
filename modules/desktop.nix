@@ -3,8 +3,8 @@
 
 # Login greeter via greetd + tuigreet.
 #
-# Provides a minimal shell session with U2F authentication (when keys are
-# configured via yubikey-auth.nix).
+# Provides a minimal shell session with multi-party PIV authentication
+# (when cards are enrolled via yubikey-auth.nix).
 {
   lib,
   pkgs,
@@ -32,7 +32,7 @@
       };
     };
 
-    # Don't auto-login with empty passwords — require U2F or explicit auth.
+    # Don't auto-login with empty passwords — require PIV or explicit auth.
     security.pam.services.greetd.allowNullPassword = lib.mkForce false;
   };
 }
