@@ -294,9 +294,15 @@
         measureAndroidSource
       ];
       nixosAndroidBuilder.fhsEnv.packages = with pkgs; [
-        # We just override a two deps of git-repo to include less features, but don't pull huge dependencies
-        # into the closure.
-        (git-repo.override {
+        (unstable.git-repo.override {
+          inherit
+            stdenv
+            makeWrapper
+            python3
+            gnupg
+            less
+            openssh
+            ;
           git = gitMinimal;
         })
         gitMinimal
