@@ -44,10 +44,13 @@ let
     then
       # Keys are removed from the ESP after the first enrollment, so
       # setup mode without them means the firmware keys were cleared.
-      [ -d /boot/KEYS ] \
-        || fail "Secure Boot is in setup mode but no keys are available to enroll. Please restore the Secure Boot keys in firmware settings."
+      for key in db KEK PK; do
+        [ -f "/boot/KEYS/$key.auth" ] \
+          || fail "Secure Boot is in setup mode but no keys are available to enroll. Please restore the Secure Boot keys in firmware settings."
+      done
       echo "Secure Boot in Setup Mode, enrolling" | systemd-cat -p info
-      ${lib.getExe enroll-secure-boot}
+      ${lib.getExe enroll-secure-boot} \
+        || fail "Enrolling the Secure Boot keys failed. Please consult the logs (ctrl+alt+f1)."
       echo "enrolled. Rebooting..." | systemd-cat -p info
       systemctl --no-block reboot
     elif [ "$sb_status" = "enabled (user)" ] || [ "$sb_status" = "enabled (deployed)" ]

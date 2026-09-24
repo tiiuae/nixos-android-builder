@@ -8,7 +8,6 @@
   desktopModules,
   customPackages,
   lib,
-  hostPkgs,
   ...
 }:
 {
