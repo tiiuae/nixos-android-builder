@@ -31,6 +31,12 @@
         "${lib.getExe nodes.machine.system.build.prepareInstallerDisk}"
       ], cwd=machine.state_dir, check=True)
 
+      def wait_for_keyboard():
+        machine.wait_until_succeeds(
+          'for f in /sys/class/input/*/name; do read -r n < "$f"; '
+          'case "$n" in *"AT Translated"*) exit 0;; esac; done; exit 1'
+        )
+
       serial_stdout_on()
       machine.start()
 
@@ -38,6 +44,7 @@
         "2", "Select a disk to install to"
       )
       machine.screenshot("installer.png")
+      wait_for_keyboard()
       # Press enter to confirm default disk
       machine.send_key("\n")
 
@@ -71,6 +78,7 @@
         "2", "Select a disk to store build artifacts in"
       )
       machine.screenshot("installer-artifacts.png")
+      wait_for_keyboard()
       machine.send_key("down")
       machine.send_key("\n")
 
