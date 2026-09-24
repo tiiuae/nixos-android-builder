@@ -49,6 +49,7 @@ $ nix build -L .#checks.x86_64-linux.keylime
 $ nix build -L .#checks.x86_64-linux.keylime-auto-enroll
 $ nix build -L .#checks.x86_64-linux.keylime-git-server
 $ nix build -L .#checks.x86_64-linux.desktop
+$ nix build -L .#checks.x86_64-linux.desktopNoSecureBoot
 $ nix build -L .#checks.x86_64-linux.desktopInstaller
 $ nix build -L .#checks.x86_64-linux.policyTests
 ```

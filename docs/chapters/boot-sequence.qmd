@@ -57,10 +57,12 @@ flowchart TB
 
 1. **UEFI boot**: Firmware loads the UKI, verifying its signature if Secure Boot is active.
 
-2. **Secure Boot check** (`ensure-secure-boot-enrollment.service`):
+2. **Secure Boot check** (`ensure-secure-boot-enrollment.service`), on every boot:
    - **Active** → continue
-   - **Setup Mode** → enroll certificates from ESP → reboot
+   - **Setup Mode** → enroll certificates from `/boot/KEYS` on the ESP → reboot. The keys are deleted after enrollment, so setup mode on a later boot (firmware keys cleared) halts with an error.
    - **Disabled** → halt with error
+
+   `systemd-repart` requires this check, so no partitions are created or modified when it fails. The same check runs on the desktop image, which has no TPM-bound partitions to otherwise stop it from booting with Secure Boot disabled.
 
 3. **Ephemeral key** (`generate-disk-key.service`): 64 bytes from `/dev/urandom`, never stored on disk.
 

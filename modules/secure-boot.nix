@@ -34,8 +34,18 @@ let
     sb_status="$(bootctl 2>/dev/null \
     | awk '/Secure Boot:/ {print $3 " " $4}')"
 
+    fail() {
+      echo "$1" | systemd-cat -p crit
+      echo "$1" > /run/fatal-error
+      exit 1
+    }
+
     if [ "$sb_status" = "disabled (setup)" ] || [ "$sb_status" = "disabled (audit)" ]
     then
+      # Keys are removed from the ESP after the first enrollment, so
+      # setup mode without them means the firmware keys were cleared.
+      [ -d /boot/KEYS ] \
+        || fail "Secure Boot is in setup mode but no keys are available to enroll. Please restore the Secure Boot keys in firmware settings."
       echo "Secure Boot in Setup Mode, enrolling" | systemd-cat -p info
       ${lib.getExe enroll-secure-boot}
       echo "enrolled. Rebooting..." | systemd-cat -p info
@@ -44,10 +54,7 @@ let
     then
       echo "Secure Boot active" | systemd-cat -p info
     else
-      msg_error="Secure Boot is neither active nor in setup mode. Please enable it in firmware settings."
-      echo "$msg_error" | systemd-cat -p crit
-      echo "$msg_error" > /run/fatal-error
-      exit 1
+      fail "Secure Boot is neither active nor in setup mode. Please enable it in firmware settings."
     fi
   '';
 
@@ -103,11 +110,15 @@ in
       ensure-secure-boot-enrollment = {
         description = "Ensure secure boot is active. If setup mode, enroll. if disabled, show error";
         wantedBy = [ "initrd.target" ];
+        # Don't create or format partitions if the check fails.
+        requiredBy = [ "systemd-repart.service" ];
         before = [
           "systemd-repart.service"
         ];
         unitConfig = {
-          AssertPathExists = "/boot/KEYS";
+          # Runs on every boot, not only the first: images without
+          # TPM-bound partitions (e.g. the desktop) have no other
+          # safeguard against running with Secure Boot disabled.
           RequiresMountsFor = [
             "/boot"
           ];
