@@ -6,6 +6,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-26.05";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     system-manager = {
       url = "github:numtide/system-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -20,6 +21,7 @@
     {
       self,
       nixpkgs,
+      nixpkgs-unstable,
       system-manager,
       pam-piv-multiparty,
       ...
@@ -40,9 +42,18 @@
         });
       };
 
+      # Expose nixpkgs-unstable as `pkgs.unstable`, for packages where the stable
+      # release branch lags too far behind upstream (i.e. git-repo).
+      unstableOverlay = _final: _prev: {
+        unstable = import nixpkgs-unstable { inherit system; };
+      };
+
       pkgs = import nixpkgs {
         inherit system;
-        overlays = [ e2fsprogsLargeFileFix ];
+        overlays = [
+          e2fsprogsLargeFileFix
+          unstableOverlay
+        ];
       };
       lib = nixpkgs.lib;
 
