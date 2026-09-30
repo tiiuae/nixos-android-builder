@@ -7,11 +7,21 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 
 ## Secure Boot
 
-**"Secure Boot is disabled" error on boot**
+**"Secure Boot is neither active nor in setup mode" error on boot**
+
+Applies to both the builder and the desktop image; the check runs on every boot.
 
 1. Enter firmware setup (F2/F12/Del during POST)
 2. Navigate to Security → Secure Boot → Enable
 3. Save and reboot
+
+**"Secure Boot is in setup mode but no keys are available to enroll" error on boot**
+
+The firmware keys were cleared after the first enrollment, which removed the keys from the ESP. Either restore the previous keys in firmware settings, or copy the keys back to the ESP and reboot to enroll them again:
+
+```bash
+nix run .#configure-disk-image -- sign --keystore ./keys --device /dev/sdX
+```
 
 **Keys won't enroll**
 

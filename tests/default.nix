@@ -195,6 +195,18 @@ in
     ];
   };
 
+  desktopNoSecureBoot = pkgs.testers.runNixOSTest {
+    imports = [
+      ./desktop-no-secure-boot.nix
+      {
+        _module.args = {
+          inherit self customPackages;
+          desktopModules = desktopModules;
+        };
+      }
+    ];
+  };
+
   desktopInstaller = pkgs.testers.runNixOSTest {
     imports = [
       ./desktop-installer.nix

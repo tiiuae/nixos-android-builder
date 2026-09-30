@@ -21,10 +21,6 @@
     };
   };
 
-  # Secure boot is not tested here — it is already covered by the
-  # desktop integration test.  The installer VM boots in UEFI setup
-  # mode so unsigned UKIs work without signing or key enrollment.
-
   testScript =
     { nodes, ... }:
     ''
@@ -49,12 +45,22 @@
         "mv", "empty0.qcow2", "${nodes.machine.virtualisation.diskImage}"
       ], cwd=machine.state_dir)
 
-      machine.start()
+      # First boot enrolls the Secure Boot keys and reboots; wait for
+      # the second firmware boot before interacting with the initrd.
+      machine.start(allow_reboot=True)
+      machine.wait_for_console_text(
+        r"BdsDxe: starting[\s\S]*BdsDxe: starting", timeout=300
+      )
       machine.switch_root()
       machine.wait_for_unit("default.target")
 
       with subtest("installed system boots"):
         machine.wait_for_unit("greetd.service")
+
+      with subtest("installed system runs with Secure Boot enabled"):
+        _status, stdout = machine.execute("bootctl status")
+        assert "Secure Boot: enabled (user)" in stdout, \
+          f"Secure Boot is NOT active: {stdout}"
 
       machine.shutdown()
     '';

@@ -23,7 +23,7 @@ Subsequent runs reuse the existing `.raw` file. Delete it to start from a clean 
 nix run .#installer-vm
 ```
 
-Tests the @sec-disk-installer workflow in a VM.
+Tests the @sec-disk-installer workflow in a VM. The installer image is signed with test keys and QEMU starts with Secure Boot in setup mode, so the installed system enrolls the keys on its first boot, reboots, and then runs with Secure Boot enabled. The same applies to `desktop-installer-vm`.
 
 ## Desktop VM
 
