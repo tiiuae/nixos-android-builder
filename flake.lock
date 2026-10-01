@@ -136,17 +136,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1778671111,
-        "narHash": "sha256-THgN4U1J/EeEVphSn67cjN5M5VtwY0lhoB9VN1I8OWA=",
+        "lastModified": 1790854770,
+        "narHash": "sha256-Q0BKPu3PUqRBDQz2fcqGC05L5krmZPgV6McBMZ/uDQQ=",
         "owner": "JulienMalka",
         "repo": "pam-piv-multiparty",
-        "rev": "a19d5980904fdab468169366a4bd1ea81f582155",
+        "rev": "6cec7c18f0cdb46f48df97bbef8976c6bd36b294",
         "type": "github"
       },
       "original": {
         "owner": "JulienMalka",
-        "ref": "v0.1.0",
         "repo": "pam-piv-multiparty",
+        "rev": "6cec7c18f0cdb46f48df97bbef8976c6bd36b294",
         "type": "github"
       }
     },
