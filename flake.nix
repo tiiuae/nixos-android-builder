@@ -12,7 +12,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     pam-piv-multiparty = {
-      url = "github:JulienMalka/pam-piv-multiparty/v0.1.0";
+      url = "github:JulienMalka/pam-piv-multiparty/6cec7c18f0cdb46f48df97bbef8976c6bd36b294";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

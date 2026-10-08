@@ -13,12 +13,13 @@
     # Basic interactive tools and passwordless sudo come from debug.nix.
     # Login greeter and session picker come from modules/desktop.nix.
 
-    # Enroll one PIV card per group, then paste the printed SPKI values here:
-    #   piv-multiparty-enroll -u user -g A
-    #   piv-multiparty-enroll -u user -g B
-    # entries.user = [
-    #   { group = "A"; spki = "MFkw..."; }
-    #   { group = "B"; spki = "MFkw..."; }
+    # Enroll one PIV card per group (touch only, no PIN), then paste the
+    # printed entries here:
+    #   piv-multiparty-enroll -u user -g A --no-pin-code
+    #   piv-multiparty-enroll -u user -g B --no-pin-code
+    # security.pam.multiparty.entries.user = [
+    #   { group = "A"; spki = "MFkw..."; requirePin = false; }
+    #   { group = "B"; spki = "MFkw..."; requirePin = false; }
     # ];
     #
     # The SPKI can be re-derived at any time from the certificate stored on

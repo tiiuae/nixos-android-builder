@@ -48,7 +48,7 @@ let
     tput ed
     echo "NOTE: The system will turn off after exiting this shell"
     echo "Build outputs are in /var/lib/artifacts"
-    echo "Insert all ${toString requiredKeys} YubiKey(s), then touch each one when prompted and enter its PIN."
+    echo "Insert all ${toString requiredKeys} YubiKey(s), then touch each one when it blinks."
     login user
     systemctl poweroff
   '';
@@ -68,7 +68,7 @@ let
       if [ "$yk_count" -ge ${toString requiredKeys} ]; then
         tput sgr0
         tput ed
-        echo "Found $yk_count YubiKey(s). Touch each one when prompted and enter its PIN."
+        echo "Found $yk_count YubiKey(s). Touch each one when it blinks."
         exec login user
       fi
       sleep 1

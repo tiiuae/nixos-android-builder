@@ -22,9 +22,11 @@ The `android-build-env.nix` module adds AOSP build dependencies to the FHS envir
 
 ## YubiKey Authentication {#sec-yubikey-auth}
 
-The `yubikey-auth.nix` module enforces hardware-token authentication via `pam-piv-multiparty`, which authenticates against the PIV applet of each YubiKey. Two key groups (A and B) are configured by default for dual-approval: two people must each present their YubiKey, touch it, and enter its PIN. Once cards are enrolled, password auth is disabled entirely; with no enrolled cards the system falls back to password auth so it stays accessible.
+The `yubikey-auth.nix` module enforces hardware-token authentication via `pam-piv-multiparty`, which authenticates against the PIV applet of each YubiKey. Two key groups (A and B) are configured by default for dual-approval: two people must each present their YubiKey and touch it; no PIN is asked for. Once cards are enrolled, password auth is disabled entirely; with no enrolled cards the system falls back to password auth so it stays accessible.
 
-Cards are enrolled with `piv-multiparty-enroll -u user -g A` (and `-g B`), which provisions the card's slot 9a and prints the SPKI to paste into `security.pam.multiparty.entries`. Enrolment assumes a factory-default PIV applet; the SPKI can later be re-read from the card's certificate without a reset. For test setups with a single YubiKey, override `security.pam.multiparty.groups` with a single group.
+Cards are enrolled with `piv-multiparty-enroll -u user -g A --no-pin-code` (and `-g B`), which provisions the card's slot 9a and prints the entry to paste into `security.pam.multiparty.entries`. Enrolment assumes a factory-default PIV applet; the SPKI can later be re-read from the card's certificate without a reset. For test setups with a single YubiKey, override `security.pam.multiparty.groups` with a single group.
+
+Authentication is possession of the card plus a touch: anyone holding an enrolled YubiKey can authenticate with it, so keep the cards in controlled custody. The card's PIN must stay at its factory default, and the touch-only policy is fixed at enrolment; changing either means resetting and re-enrolling the card.
 
 ## Unattended Mode {#sec-unattended}
 
