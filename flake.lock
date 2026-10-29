@@ -136,17 +136,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1790854770,
-        "narHash": "sha256-Q0BKPu3PUqRBDQz2fcqGC05L5krmZPgV6McBMZ/uDQQ=",
-        "owner": "JulienMalka",
+        "lastModified": 1793277709,
+        "narHash": "sha256-MQ2LjskVz0p/JoOk3yLYIZ8qSkT7hvFJb1VudTYkpbA=",
+        "owner": "tiiuae",
         "repo": "pam-piv-multiparty",
-        "rev": "6cec7c18f0cdb46f48df97bbef8976c6bd36b294",
+        "rev": "30c9a433c32aeb283d6d10d09de95626e7f73473",
         "type": "github"
       },
       "original": {
-        "owner": "JulienMalka",
+        "owner": "tiiuae",
+        "ref": "v0.2.1",
         "repo": "pam-piv-multiparty",
-        "rev": "6cec7c18f0cdb46f48df97bbef8976c6bd36b294",
         "type": "github"
       }
     },
